@@ -1,0 +1,15 @@
+server:
+  port: 8000
+
+
+logging:
+  level:
+    org.springframework.web: INFO
+    com.github.binarywang.demo.wx.mp: DEBUG
+wx:
+  mp:
+    configs:
+      - appId: wxae9367e1c7c92340
+        secret: 4c57f5cec343e8b8b0ea027001f3db72
+        token: test001
+        aesKey:
