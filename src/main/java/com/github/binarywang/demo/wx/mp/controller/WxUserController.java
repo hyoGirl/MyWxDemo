@@ -36,7 +36,6 @@ public class WxUserController {
     /**
      * 如果关注者太多，那么每次去
      * 就是在调用接口时，将上一次调用得到的返回中的next_openid值，作为下一次调用中的next_openid值
-     *
      * 不填写默认就是拉取10000条记录
      * @param next_openid
      * @return
