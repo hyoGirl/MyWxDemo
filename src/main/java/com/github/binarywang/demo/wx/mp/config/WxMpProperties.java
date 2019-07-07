@@ -2,6 +2,8 @@ package com.github.binarywang.demo.wx.mp.config;
 
 import com.github.binarywang.demo.wx.mp.utils.JsonUtils;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -17,6 +19,8 @@ public class WxMpProperties {
     private List<MpConfig> configs;
 
     @Data
+    @Getter
+    @Setter
     public static class MpConfig {
         /**
          * 设置微信公众号的appid

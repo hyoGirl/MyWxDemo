@@ -2,6 +2,11 @@ package com.github.binarywang.demo.wx.mp.handler;
 
 import java.util.Map;
 
+import com.github.binarywang.demo.wx.mp.service.SendMsgService;
+import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.mp.api.WxMpKefuService;
+import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.binarywang.demo.wx.mp.builder.TextBuilder;
@@ -18,6 +23,9 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 @Component
 public class SubscribeHandler extends AbstractHandler {
 
+//    @Autowired
+//    SendMsgService sendMsgService;
+
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                     Map<String, Object> context, WxMpService weixinService,
@@ -28,7 +36,7 @@ public class SubscribeHandler extends AbstractHandler {
         // 获取微信用户基本信息
         try {
             WxMpUser userWxInfo = weixinService.getUserService()
-                .userInfo(wxMessage.getFromUser(), null);
+                    .userInfo(wxMessage.getFromUser(), null);
             if (userWxInfo != null) {
                 System.out.println(userWxInfo.toString());
                 // TODO 可以添加关注用户到本地数据库
@@ -39,20 +47,39 @@ public class SubscribeHandler extends AbstractHandler {
             }
         }
 
-
+        System.out.println("--------------------------------------进入了关注事件handler-------------------------------------------");
         WxMpXmlOutMessage responseResult = null;
         try {
             responseResult = this.handleSpecial(wxMessage);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
-
         if (responseResult != null) {
             return responseResult;
         }
+        String event = wxMessage.getEvent();
+        String fromUser = wxMessage.getFromUser();
 
         try {
-            return new TextBuilder().build("感谢关注", wxMessage, weixinService);
+            if(event.equalsIgnoreCase(WxConsts.EventType.SUBSCRIBE)){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WxMpKefuMessage wxMpKefuMessage=new WxMpKefuMessage();
+                        wxMpKefuMessage.setToUser(fromUser);
+                        wxMpKefuMessage.setMsgType("text");
+                        wxMpKefuMessage.setContent("默认handler发送消息");
+                        try {
+                            Thread.sleep(2000);
+                            weixinService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+                            return;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+            return new TextBuilder().build("感谢关注001", wxMessage, weixinService);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
@@ -64,9 +91,17 @@ public class SubscribeHandler extends AbstractHandler {
      * 处理特殊请求，比如如果是扫码进来的，可以做相应处理
      */
     private WxMpXmlOutMessage handleSpecial(WxMpXmlMessage wxMessage)
-        throws Exception {
+            throws Exception {
 
-        System.out.println("用户扫码进来");
+        String event = wxMessage.getEvent();
+        String eventKey = wxMessage.getEventKey();
+
+        System.out.println("事件类型是："+event);
+        System.out.println("事件eventKey是："+eventKey);
+
+
+
+
         //TODO
         return null;
     }

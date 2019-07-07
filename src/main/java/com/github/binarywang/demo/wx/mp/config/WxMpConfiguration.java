@@ -6,10 +6,12 @@ import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
-import me.chanjar.weixin.mp.constant.WxMpEventConstants;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,17 +54,17 @@ public class WxMpConfiguration {
         if (configs == null) {
             throw new RuntimeException("大哥，拜托先看下项目首页的说明（readme文件），添加下相关配置，注意别配错了！");
         }
-
+        System.out.println("============================最基础的service开始注入了");
         WxMpService service = new WxMpServiceImpl();
         service.setMultiConfigStorages(configs
-            .stream().map(a -> {
-                WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
-                configStorage.setAppId(a.getAppId());
-                configStorage.setSecret(a.getSecret());
-                configStorage.setToken(a.getToken());
-                configStorage.setAesKey(a.getAesKey());
-                return configStorage;
-            }).collect(Collectors.toMap(WxMpInMemoryConfigStorage::getAppId, a -> a, (o, n) -> o)));
+                .stream().map(a -> {
+                    WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
+                    configStorage.setAppId(a.getAppId());
+                    configStorage.setSecret(a.getSecret());
+                    configStorage.setToken(a.getToken());
+                    configStorage.setAesKey(a.getAesKey());
+                    return configStorage;
+                }).collect(Collectors.toMap(WxMpInMemoryConfigStorage::getAppId, a -> a, (o, n) -> o)));
         return service;
     }
 
@@ -75,11 +77,11 @@ public class WxMpConfiguration {
 
         // 接收客服会话管理事件
         newRouter.rule().async(false).msgType(EVENT).event(KF_CREATE_SESSION)
-            .handler(this.kfSessionHandler).end();
+                .handler(this.kfSessionHandler).end();
         newRouter.rule().async(false).msgType(EVENT).event(KF_CLOSE_SESSION)
-            .handler(this.kfSessionHandler).end();
+                .handler(this.kfSessionHandler).end();
         newRouter.rule().async(false).msgType(EVENT).event(KF_SWITCH_SESSION)
-            .handler(this.kfSessionHandler).end();
+                .handler(this.kfSessionHandler).end();
 
         // 门店审核事件
         newRouter.rule().async(false).msgType(EVENT).event(POI_CHECK_NOTIFY).handler(this.storeCheckNotifyHandler).end();
@@ -91,6 +93,7 @@ public class WxMpConfiguration {
         newRouter.rule().async(false).msgType(EVENT).event(VIEW).handler(this.nullHandler).end();
 
         // 关注事件
+//        newRouter.rule().async(false).msgType(EVENT).event(SUBSCRIBE).handler(this.subscribeHandler).end();
         newRouter.rule().async(false).msgType(EVENT).event(SUBSCRIBE).handler(this.subscribeHandler).end();
 
         // 取消关注事件

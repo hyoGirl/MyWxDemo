@@ -6,10 +6,29 @@ logging:
   level:
     org.springframework.web: INFO
     com.github.binarywang.demo.wx.mp: DEBUG
+#  测试账号
+#wx:
+#  mp:
+#    configs:
+#      - appId: wxae9367e1c7c92340
+#        secret: 4c57f5cec343e8b8b0ea027001f3db72
+#        token: test001
+#        aesKey:
+
+#  公司测试账号
+#wx:
+#  mp:
+#    configs:
+#      - appId:  wxef71f21560c1e216
+#        secret:  266c1e53ab86232a5b1fb8d8d405daaf
+#        token: test001
+#        aesKey:
+
+#个人订阅号
 wx:
   mp:
     configs:
-      - appId: wxae9367e1c7c92340
-        secret: 4c57f5cec343e8b8b0ea027001f3db72
+      - appId:  wxeb25118b825602db
+        secret:  5fa452c2db11f37ab7830d9746fbabb3
         token: test001
         aesKey:
