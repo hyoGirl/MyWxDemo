@@ -51,6 +51,24 @@ public class WxMpQrcodeController {
         }
         return JSON.toJSONString(wxMpQrCodeTicket);
     }
+    /**
+     *  换取永久字符串二维码ticket
+     * @param sceneId
+     * @return
+     */
+    @PostMapping("/ticket2")
+    @ResponseBody
+    public  String qrCodeCreateTmpTicketForveer(@RequestParam("sceneId") String sceneId){
+
+        WxMpQrCodeTicket wxMpQrCodeTicket=null;
+
+        try {
+            wxMpQrCodeTicket = wxMpQrcodeService.qrCodeCreateLastTicket(sceneId);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+        return JSON.toJSONString(wxMpQrCodeTicket);
+    }
 
     /**
      * 通过ticket来换二维码图片

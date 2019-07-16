@@ -1,11 +1,13 @@
 package com.github.binarywang.demo.wx.mp.config;
 
+import me.chanjar.weixin.mp.api.WxMpKefuService;
 import me.chanjar.weixin.mp.api.WxMpMassMessageService;
 import me.chanjar.weixin.mp.api.WxMpMaterialService;
 import me.chanjar.weixin.mp.api.WxMpQrcodeService;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.WxMpTemplateMsgService;
 import me.chanjar.weixin.mp.api.WxMpUserService;
+import me.chanjar.weixin.mp.api.impl.WxMpKefuServiceImpl;
 import me.chanjar.weixin.mp.api.impl.WxMpMassMessageServiceImpl;
 import me.chanjar.weixin.mp.api.impl.WxMpMaterialServiceImpl;
 import me.chanjar.weixin.mp.api.impl.WxMpQrcodeServiceImpl;
@@ -62,6 +64,18 @@ public class BeanConfig {
         WxMpMassMessageService wxMpMassMessageService=new WxMpMassMessageServiceImpl(wxMpService);
 
         return wxMpMassMessageService;
+    }
+
+    @Bean
+    public WxMpKefuService wxMpKefuService(){
+
+
+        System.out.println("---------客服service实例化");
+
+        WxMpKefuService wxMpKefuService=new WxMpKefuServiceImpl(wxMpService);
+
+
+        return wxMpKefuService;
     }
 
 }
