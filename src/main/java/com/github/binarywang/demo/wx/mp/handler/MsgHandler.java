@@ -33,6 +33,8 @@ public class MsgHandler extends AbstractHandler {
             //TODO 可以选择将消息保存到本地
         }
 
+
+
         //当用户输入关键词如“你好”，“客服”等，并且有客服在线时，把消息转发给在线客服
         try {
             if (StringUtils.startsWithAny(wxMessage.getContent(), "你好", "客服")
@@ -59,15 +61,17 @@ public class MsgHandler extends AbstractHandler {
         String msgContent = wxMessage.getContent();
 
 
-        if (msgContent.equals("文本")) {
-            String returnContent = "你好,这个是文本信息";
-            return new TextBuilder().build(returnContent, wxMessage, weixinService);
-        } else if (msgContent.equals("图片")) {
-            //回复一张图片信息
-            String mediaId = "zavg5zkBkBDFP1bvcDTVFG3t8dA5W67HRGkkPOaihyS191B34e3FIZd5QPG3MY_3";
-            return new ImageBuilder().build(mediaId, wxMessage, weixinService);
-        } else {
-            return new TextBuilder().build(content, wxMessage, weixinService);
-        }
+//        if (msgContent.equals("文本")) {
+//            String returnContent = "你好,谢谢回复";
+//            return new TextBuilder().build(returnContent, wxMessage, weixinService);
+//        } else if (msgContent.equals("图片")) {
+//            //回复一张图片信息
+//            String mediaId = "zavg5zkBkBDFP1bvcDTVFG3t8dA5W67HRGkkPOaihyS191B34e3FIZd5QPG3MY_3";
+//            return new ImageBuilder().build(mediaId, wxMessage, weixinService);
+//        } else {
+//            return new TextBuilder().build(content, wxMessage, weixinService);
+//        }
+
+        return new TextBuilder().build(content, wxMessage, weixinService);
     }
 }
