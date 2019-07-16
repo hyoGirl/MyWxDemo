@@ -15,8 +15,12 @@ import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.api.impl.WxMpTemplateMsgServiceImpl;
 import me.chanjar.weixin.mp.api.impl.WxMpUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 
 /**
  * @Auther: ashur
@@ -24,11 +28,9 @@ import org.springframework.context.annotation.Configuration;
  * @Description:
  */
 @Configuration
-public class BeanConfig {
-
+public class BeanConfig  {
     @Autowired
     WxMpService wxMpService;
-
     @Bean
     public WxMpUserService wxMpUserService(){
         WxMpUserService wxMpUserService=new WxMpUserServiceImpl(wxMpService);
@@ -41,7 +43,6 @@ public class BeanConfig {
         WxMpMaterialService wxMpMaterialService=new WxMpMaterialServiceImpl(wxMpService);
         return wxMpMaterialService;
     }
-
 
     @Bean
     public WxMpTemplateMsgService wxMpTemplateMsgService(){
@@ -58,9 +59,11 @@ public class BeanConfig {
 
         return wxMpQrcodeService;
     }
+
     @Bean
     public WxMpMassMessageService wxMpMassMessageService(){
 
+        System.out.println("=====================群发service开始注入了");
         WxMpMassMessageService wxMpMassMessageService=new WxMpMassMessageServiceImpl(wxMpService);
 
         return wxMpMassMessageService;
@@ -69,12 +72,9 @@ public class BeanConfig {
     @Bean
     public WxMpKefuService wxMpKefuService(){
 
-
         System.out.println("---------客服service实例化");
 
         WxMpKefuService wxMpKefuService=new WxMpKefuServiceImpl(wxMpService);
-
-
         return wxMpKefuService;
     }
 
