@@ -12,6 +12,7 @@ import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,11 +27,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @Auther: ashur
  * @Date: 2019/6/11 0011 16:34
- * @Description:  用户管理相关操作接口
+ * @Description: 用户管理相关操作接口
  */
 
 @AllArgsConstructor
@@ -42,18 +44,23 @@ public class WxUserController {
     WxMpUserService wxMpUserService;
 
 
-
     @Autowired
     MyThreadConfig myThreadConfig;
 
+//    @Autowired
+//    ExecutorService executorService;
 
 
+    @Autowired()
+    @Qualifier("myThread")
+    ThreadPoolExecutor threadPoolExecutor;
 
 
     /**
      * 如果关注者太多，那么每次去
      * 就是在调用接口时，将上一次调用得到的返回中的next_openid值，作为下一次调用中的next_openid值
      * 不填写默认就是拉取10000条记录
+     *
      * @param next_openid
      * @return
      */
@@ -61,7 +68,7 @@ public class WxUserController {
     @ResponseBody
     public String getUserList(@RequestParam(name = "next_openid", required = false) String next_openid) {
         long l = System.currentTimeMillis();
-        WxMpUserList wxMpUserList=null;
+        WxMpUserList wxMpUserList = null;
         try {
             wxMpUserList = this.wxMpUserService.userList(next_openid);
         } catch (WxErrorException e) {
@@ -69,7 +76,7 @@ public class WxUserController {
         }
         List<String> openids = wxMpUserList.getOpenids();
 
-        List<WxMpUser> list=new ArrayList<>();
+        List<WxMpUser> list = new ArrayList<>();
 
         try {
             for (int i = 0; i < openids.size(); i++) {
@@ -83,7 +90,7 @@ public class WxUserController {
             e.printStackTrace();
         }
         System.out.println(JSON.toJSONString(list));
-        System.out.println("总执行时间为： "+(System.currentTimeMillis()-l));
+        System.out.println("总执行时间为： " + (System.currentTimeMillis() - l));
 
         return JSON.toJSONString(wxMpUserList);
     }
@@ -93,45 +100,54 @@ public class WxUserController {
     public String getUserList2(@RequestParam(name = "next_openid", required = false) String next_openid) throws Exception {
 
         long l = System.currentTimeMillis();
-        WxMpUserList wxMpUserList=null;
+        WxMpUserList wxMpUserList = null;
         try {
             wxMpUserList = this.wxMpUserService.userList(next_openid);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
         List<String> openids = wxMpUserList.getOpenids();
-        int threadNum=5;
-        int num=openids.size()%threadNum==0?openids.size()/threadNum:openids.size()%threadNum+1;
-        List<String> subOpenids=null;
+        int threadNum = 5;
+        int num = openids.size() % threadNum == 0 ? openids.size() / threadNum : openids.size() / threadNum + 1;
+        System.out.println(num);
+        System.out.println(openids.size());
+        System.out.println(openids.size() / threadNum );
+        List<String> subOpenids = null;
         Callable<List<WxMpUser>> task = null;
         List<Callable<List<WxMpUser>>> tasks = new ArrayList<Callable<List<WxMpUser>>>();
         for (int i = 0; i < num; i++) {
-            if(i==num-1){
-                subOpenids=openids.subList(i*threadNum,openids.size());
-            }else{
-                subOpenids=openids.subList(i*threadNum,(i+1)*threadNum);
+            if (i == num - 1) {
+                subOpenids = openids.subList(i * threadNum, openids.size());
+            } else {
+                subOpenids = openids.subList(i * threadNum, (i + 1) * threadNum);
             }
-           final List<String> sublist=subOpenids;
-            task=new Callable<List<WxMpUser>>() {
+            final List<String> sublist = subOpenids;
+            task = new Callable<List<WxMpUser>>() {
                 @Override
                 public List<WxMpUser> call() throws Exception {
-                    List<WxMpUser> list=new ArrayList<>();
+                    List<WxMpUser> list = new ArrayList<>();
                     for (int j = 0; j < sublist.size(); j++) {
                         WxMpUser zh_cn = wxMpUserService.userInfo(sublist.get(j), "zh_CN");
                         list.add(zh_cn);
                     }
+                    System.out.println("当前线程的名字为： "+Thread.currentThread().getName());
                     return list;
                 }
             };
             tasks.add(task);
         }
+
+
         ExecutorService executorService = Executors.newFixedThreadPool(20);
-        List result=new ArrayList();
-        List<Future<List<WxMpUser>>> futures = executorService.invokeAll(tasks);
-        for(Future<List<WxMpUser>> future:futures){
+        List result = new ArrayList();
+//        List<Future<List<WxMpUser>>> futures = executorService.invokeAll(tasks);
+        List<Future<List<WxMpUser>>> futures = threadPoolExecutor.invokeAll(tasks);
+
+
+        for (Future<List<WxMpUser>> future : futures) {
             result.add(future.get());
         }
-        System.out.println("总执行时间为： "+(System.currentTimeMillis()-l));
+        System.out.println("总执行时间为： " + (System.currentTimeMillis() - l));
 //        return JSON.toJSONString(result);
 
         System.out.println(JSON.toJSONString(result));
@@ -139,52 +155,52 @@ public class WxUserController {
     }
 
 
-
-
     /**
      * 获取用户基本信息
-     * @param openid  用户openid
-     * @param lang  语言，zh_CN 简体(默认)，zh_TW 繁体，en 英语
+     *
+     * @param openid 用户openid
+     * @param lang   语言，zh_CN 简体(默认)，zh_TW 繁体，en 英语
      * @return
      */
     @ResponseBody
     @PostMapping("/userInfo")
     public String userInfo(@RequestParam("openid") String openid,
-                           @RequestParam("lang") String lang)  {
-        WxMpUser wxMpUser=null;
+                           @RequestParam("lang") String lang) {
+        WxMpUser wxMpUser = null;
         try {
             wxMpUser = this.wxMpUserService.userInfo(openid, lang);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
-        return  JSON.toJSONString(wxMpUser);
+        return JSON.toJSONString(wxMpUser);
     }
 
     /**
      * 获取用户基本信息列表
      * 开发者可通过该接口来批量获取用户基本信息。最多支持一次拉取100条。
-     * @param openidList  用户openid列表
+     *
+     * @param openidList 用户openid列表
      * @return
      */
     @ResponseBody
     @PostMapping("/userInfoList")
-    public String userInfo(@RequestParam("openidList") List<String> openidList)  {
+    public String userInfo(@RequestParam("openidList") List<String> openidList) {
         System.out.println(openidList.toString());
-        List<WxMpUser> wxMpUsers=null;
+        List<WxMpUser> wxMpUsers = null;
         try {
-             wxMpUsers = this.wxMpUserService.userInfoList(openidList);
+            wxMpUsers = this.wxMpUserService.userInfoList(openidList);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
-        return  JSON.toJSONString(wxMpUsers);
+        return JSON.toJSONString(wxMpUsers);
     }
 
 
     @PostMapping("/updateRemark")
     public void updateRemark(@RequestParam("openid") String openid
-        ,@RequestParam("remark") String remark)  {
+            , @RequestParam("remark") String remark) {
         try {
-             this.wxMpUserService.userUpdateRemark(openid,remark);
+            this.wxMpUserService.userUpdateRemark(openid, remark);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }

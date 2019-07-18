@@ -93,22 +93,6 @@ public class WxMediaController {
 
     }
 
-    /**
-     * 新增图文永久素材
-     * @param news
-     * @return
-     */
-    @PostMapping("/materialNewsUpload")
-    @ResponseBody
-    public String materialNewsUpload2(@RequestBody WxMpMaterialNews news) {
-        WxMpMaterialUploadResult wxMpMaterialUploadResult=null;
-        try {
-             wxMpMaterialUploadResult = wxMpMaterialService.materialNewsUpload(news);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return JSON.toJSONString(wxMpMaterialUploadResult);
-    }
 
     /**
      * 获取临时素材
@@ -146,7 +130,7 @@ public class WxMediaController {
      * </pre>
      *
      */
-    @GetMapping("/materialFileUpload")
+    @GetMapping("/materialFileUpload2")
     @ResponseBody
     public  String materialFileUpload(@RequestParam("file") MultipartFile multipartFile,
                                       @RequestParam("mediaType")String mediaType,

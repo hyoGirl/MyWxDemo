@@ -52,11 +52,11 @@ wx:
 #        aesKey:
 
 #个人订阅号
-wx:
-  mp:
-    configs:
-      - appId:  wxeb25118b825602db
-        secret:  5fa452c2db11f37ab7830d9746fbabb3
-        token: test001
-        aesKey:
+#wx:
+#  mp:
+#    configs:
+#      - appId:  wxeb25118b825602db
+#        secret:  5fa452c2db11f37ab7830d9746fbabb3
+#        token: test001
+#        aesKey:
 

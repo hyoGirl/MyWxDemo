@@ -1,29 +1,20 @@
 package com.github.binarywang.demo.wx.mp.handler;
 
-import java.util.Map;
-
-<<<<<<< HEAD
-import com.github.binarywang.demo.wx.mp.service.MyService;
-import me.chanjar.weixin.mp.api.WxMpKefuService;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-=======
-import com.github.binarywang.demo.wx.mp.service.SendMsgService;
-import me.chanjar.weixin.common.api.WxConsts;
-import me.chanjar.weixin.mp.api.WxMpKefuService;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
-import org.springframework.beans.factory.annotation.Autowired;
->>>>>>> 200211cfa7c0a9396cb2f8d755a0bf7b0967108b
-import org.springframework.stereotype.Component;
-
 import com.github.binarywang.demo.wx.mp.builder.TextBuilder;
+import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
+import me.chanjar.weixin.mp.api.WxMpKefuService;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
 
 /**
  * @author Binary Wang(https://github.com/binarywang)
@@ -32,13 +23,10 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 @Order(2)
 public class SubscribeHandler extends AbstractHandler {
 
-<<<<<<< HEAD
 
     volatile  boolean flag=false;
-=======
 //    @Autowired
 //    SendMsgService sendMsgService;
->>>>>>> 200211cfa7c0a9396cb2f8d755a0bf7b0967108b
 
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
@@ -61,7 +49,6 @@ public class SubscribeHandler extends AbstractHandler {
             }
         }
 
-<<<<<<< HEAD
 
         /**
          *
@@ -94,9 +81,7 @@ public class SubscribeHandler extends AbstractHandler {
         });
         t1.start();
 
-=======
         System.out.println("--------------------------------------进入了关注事件handler-------------------------------------------");
->>>>>>> 200211cfa7c0a9396cb2f8d755a0bf7b0967108b
         WxMpXmlOutMessage responseResult = null;
         try {
             responseResult = this.handleSpecial(wxMessage);
@@ -106,12 +91,8 @@ public class SubscribeHandler extends AbstractHandler {
         if (responseResult != null) {
             return responseResult;
         }
-<<<<<<< HEAD
        changeFlag(flag);
-=======
         String event = wxMessage.getEvent();
-        String fromUser = wxMessage.getFromUser();
->>>>>>> 200211cfa7c0a9396cb2f8d755a0bf7b0967108b
 
         try {
             if(event.equalsIgnoreCase(WxConsts.EventType.SUBSCRIBE)){
@@ -159,14 +140,11 @@ public class SubscribeHandler extends AbstractHandler {
 
 
 
-<<<<<<< HEAD
         System.out.println(wxMessage.getEvent());
         System.out.println(wxMessage.getEventKey());
 
 
         System.out.println("用户扫码进来");
-=======
->>>>>>> 200211cfa7c0a9396cb2f8d755a0bf7b0967108b
         //TODO
         return null;
     }

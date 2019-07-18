@@ -10,11 +10,15 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Auther: xulei
@@ -58,7 +62,9 @@ public class MyThreadConfig implements AsyncConfigurer {
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         threadPoolTaskExecutor.initialize();
 
+
         return threadPoolTaskExecutor;
+
     }
 
     /**
@@ -79,25 +85,75 @@ public class MyThreadConfig implements AsyncConfigurer {
 
 
 
-//    @Bean("myThread")
-//    public Executor myThread(){
-//
-//        ThreadPoolTaskExecutor threadPoolTaskExecutor=new ThreadPoolTaskExecutor();
-//        threadPoolTaskExecutor.setCorePoolSize(coreSize);
-//        threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveTime);
-//        threadPoolTaskExecutor.setMaxPoolSize(maxSize);
-//        threadPoolTaskExecutor.setQueueCapacity(queueCapacity);
-//
-//        threadPoolTaskExecutor.setThreadNamePrefix("myThread-");
-//
-//        // setRejectedExecutionHandler：当pool已经达到max size的时候，如何处理新任务
-//        // CallerRunsPolicy：不在新线程中执行任务，而是由调用者所在的线程来执行
-//        threadPoolTaskExecutor.setAllowCoreThreadTimeOut(true);
-//        threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-//        threadPoolTaskExecutor.initialize();
-//
-//        return threadPoolTaskExecutor;
-//    }
+    @Bean("myThread")
+    public  ThreadPoolExecutor myThread(){
+
+        int corePoolSize = coreSize;
+        int maximumPoolSize = maxSize;
+        TimeUnit unit = TimeUnit.SECONDS;
+
+
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(queueCapacity);
+
+//        new RejectedExecutionHandler() {
+//            @Override
+//            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+//                System.err.println( r.toString() + " rejected");
+//            }
+//        };
+
+        ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
+
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
+                maximumPoolSize,
+                keepAliveTime,
+                unit,
+                workQueue,
+                new NameTreadFactory(), callerRunsPolicy
+        );
+        return threadPoolExecutor;
+
+//                public ThreadPoolExecutor(int corePoolSize,
+//        int maximumPoolSize,
+//        long keepAliveTime,
+//        TimeUnit unit,;
+//        BlockingQueue<Runnable> workQueue,
+//        ThreadFactory threadFactory,
+//        RejectedExecutionHandler handler) {
+//            if (corePoolSize < 0 ||
+//                    maximumPoolSize <= 0 ||
+//                    maximumPoolSize < corePoolSize ||
+//                    keepAliveTime < 0)
+//                throw new IllegalArgumentException();
+//            if (workQueue == null || threadFactory == null || handler == null)
+//                throw new NullPointerException();
+//            this.corePoolSize = corePoolSize;
+//            this.maximumPoolSize = maximumPoolSize;
+//            this.workQueue = workQueue;
+//            this.keepAliveTime = unit.toNanos(keepAliveTime);
+//            this.threadFactory = threadFactory;
+//            this.handler = handler;
+//        }
+
+    }
+
+    class NameTreadFactory implements  ThreadFactory{
+
+
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+//        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+
+        @Override
+        public Thread newThread(Runnable r) {
+
+//            Thread thread = this.defaultFactory.newThread(r);
+
+            Thread thread=new Thread(r,"Java-" + this.threadNumber.getAndIncrement());
+            return thread;
+        }
+    }
+
+
 
 
 }
