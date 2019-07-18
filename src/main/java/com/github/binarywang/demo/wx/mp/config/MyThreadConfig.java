@@ -13,12 +13,11 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * @Auther: xulei
@@ -30,7 +29,6 @@ public class MyThreadConfig implements AsyncConfigurer {
 
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
 
     @Value("${thread.pool.coreSize:10}")
     private int coreSize;
@@ -46,14 +44,13 @@ public class MyThreadConfig implements AsyncConfigurer {
 
 
     @Bean("springThread")
-    public Executor springThread(){
+    public Executor springThread() {
 
-        ThreadPoolTaskExecutor threadPoolTaskExecutor=new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(coreSize);
         threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveTime);
         threadPoolTaskExecutor.setMaxPoolSize(maxSize);
         threadPoolTaskExecutor.setQueueCapacity(queueCapacity);
-
         threadPoolTaskExecutor.setThreadNamePrefix("myThread-");
 
         // setRejectedExecutionHandler：当pool已经达到max size的时候，如何处理新任务
@@ -68,7 +65,8 @@ public class MyThreadConfig implements AsyncConfigurer {
     }
 
     /**
-     *  异步任务中异常处理
+     * 异步任务中异常处理
+     *
      * @return
      */
     @Override
@@ -77,16 +75,15 @@ public class MyThreadConfig implements AsyncConfigurer {
 
             @Override
             public void handleUncaughtException(Throwable arg0, Method arg1, Object... arg2) {
-                logger.error("=========================="+arg0.getMessage()+"=======================", arg0);
-                logger.error("exception method:"+arg1.getName());
+                logger.error("==========================" + arg0.getMessage() + "=======================", arg0);
+                logger.error("exception method:" + arg1.getName());
             }
         };
     }
 
 
-
     @Bean("myThread")
-    public  ThreadPoolExecutor myThread(){
+    public ThreadPoolExecutor myThread() {
 
         int corePoolSize = coreSize;
         int maximumPoolSize = maxSize;
@@ -117,27 +114,16 @@ public class MyThreadConfig implements AsyncConfigurer {
 //        int maximumPoolSize,
 //        long keepAliveTime,
 //        TimeUnit unit,;
-//        BlockingQueue<Runnable> workQueue,
-//        ThreadFactory threadFactory,
-//        RejectedExecutionHandler handler) {
-//            if (corePoolSize < 0 ||
-//                    maximumPoolSize <= 0 ||
-//                    maximumPoolSize < corePoolSize ||
-//                    keepAliveTime < 0)
-//                throw new IllegalArgumentException();
-//            if (workQueue == null || threadFactory == null || handler == null)
-//                throw new NullPointerException();
-//            this.corePoolSize = corePoolSize;
-//            this.maximumPoolSize = maximumPoolSize;
-//            this.workQueue = workQueue;
-//            this.keepAliveTime = unit.toNanos(keepAliveTime);
-//            this.threadFactory = threadFactory;
-//            this.handler = handler;
+
+//         ThreadPoolExecutor(int corePoolSize,
+//        int maximumPoolSize,
+//        long keepAliveTime,
+//        TimeUnit unit,
 //        }
 
     }
 
-    class NameTreadFactory implements  ThreadFactory{
+    class NameTreadFactory implements ThreadFactory {
 
 
         private final AtomicInteger threadNumber = new AtomicInteger(1);
@@ -148,12 +134,15 @@ public class MyThreadConfig implements AsyncConfigurer {
 
 //            Thread thread = this.defaultFactory.newThread(r);
 
-            Thread thread=new Thread(r,"Java-" + this.threadNumber.getAndIncrement());
+            Thread thread = new Thread(r, "Java-" + this.threadNumber.getAndIncrement());
             return thread;
         }
     }
 
-
-
-
 }
+
+
+
+
+
+
