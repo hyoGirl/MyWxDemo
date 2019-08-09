@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -89,18 +91,8 @@ public class MyThreadConfig implements AsyncConfigurer {
         int maximumPoolSize = maxSize;
         TimeUnit unit = TimeUnit.SECONDS;
 
-
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(queueCapacity);
-
-//        new RejectedExecutionHandler() {
-//            @Override
-//            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-//                System.err.println( r.toString() + " rejected");
-//            }
-//        };
-
         ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
-
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 maximumPoolSize,
                 keepAliveTime,
@@ -110,33 +102,28 @@ public class MyThreadConfig implements AsyncConfigurer {
         );
         return threadPoolExecutor;
 
-//                public ThreadPoolExecutor(int corePoolSize,
-//        int maximumPoolSize,
-//        long keepAliveTime,
-//        TimeUnit unit,;
-
-//         ThreadPoolExecutor(int corePoolSize,
-//        int maximumPoolSize,
-//        long keepAliveTime,
-//        TimeUnit unit,
-//        }
-
     }
-
     class NameTreadFactory implements ThreadFactory {
-
-
         private final AtomicInteger threadNumber = new AtomicInteger(1);
-//        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
-
         @Override
         public Thread newThread(Runnable r) {
-
 //            Thread thread = this.defaultFactory.newThread(r);
-
             Thread thread = new Thread(r, "Java-" + this.threadNumber.getAndIncrement());
             return thread;
         }
+    }
+
+
+    @Bean
+    public ScheduledExecutorService schedule(){
+
+
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
+
+        return scheduledExecutorService;
+
+
     }
 
 }

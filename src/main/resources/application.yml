@@ -9,16 +9,6 @@ logging:
     com.github.binarywang.demo.wx.mp: DEBUG
 
 #  测试账号
-
-wx:
-  mp:
-    configs:
-      - appId: wxae9367e1c7c92340
-        secret: 4c57f5cec343e8b8b0ea027001f3db72
-        token: test001
-        aesKey:
-
-
 #wx:
 #  mp:
 #    configs:
@@ -26,13 +16,6 @@ wx:
 #        secret: 4c57f5cec343e8b8b0ea027001f3db72
 #        token: test001
 #        aesKey:
-
-
-
-
-
-
-
 
 ###########公司账号
 #wx:
@@ -52,9 +35,17 @@ wx:
         token:
         aesKey:
 
+###########春风账号
+#wx:
+#  mp:
+#    configs:
+#      - appId: wxf0fdd8ddad8b2e6f
+#        secret: 4e5444793011ea5be9191a37aa33d928
+#        token:
+#        aesKey:
 
-#个人订阅号
 
+###########个人订阅号
 #wx:
 #  mp:
 #    configs:
@@ -64,3 +55,35 @@ wx:
 #        aesKey:
 
 
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    refresh-mapper: true
+  mapper-locations: classpath:mybatis/*.xml
+  typeAliasesPackage: com.github.binarywang.demo.wx.mp.entity
+
+
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    username: root
+#    password: root
+#    url: jdbc:mysql://127.0.0.1:3306/cdp_swarovski?useSSL=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      auto-commit: true
+      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      maximum-pool-size: 100
+      minimum-idle: 10
+      pool-name: DatebookHikariCP
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://127.0.0.1:3306/cdp_swarovski?useSSL=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=GMT%2B8
+    username: root
+    password: root
