@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.binarywang.demo.wx.mp.dao.WxUserDao">
+	<!--批量添加 -->
+
+	<insert id="saveDatas" parameterType="java.util.List">
+		insert into t_wx_user
+		(
+		open_id,
+		subscribe,
+		sex,
+		city,
+		province,
+		country,
+		language,
+		head_img_url,
+		subscribe_time,
+		remark,
+		subscribe_scene,
+		qr_scene,
+		qr_scene_str,
+		<!-- active_time, -->
+		create_time,
+		update_time,
+		enable,
+		nick_name)
+		values
+		<foreach collection="result" item="wxUserItme"
+			index="index" separator=",">
+            (#{wxUserItme.openId},
+			#{wxUserItme.subscribe},
+			#{wxUserItme.sex},
+			#{wxUserItme.city},
+			#{wxUserItme.province},
+			#{wxUserItme.country},
+			#{wxUserItme.language},
+			#{wxUserItme.headImgUrl},
+			#{wxUserItme.subscribeTime},
+			#{wxUserItme.remark},
+			#{wxUserItme.subscribeScene},
+			#{wxUserItme.qrScene},
+			#{wxUserItme.qrSceneStr},
+			<!-- #{wxUserItme.activeTime}, -->
+		    NOW(),
+            NOW(),
+			1,
+			#{wxUserItme.nickname})
+		</foreach>
+	</insert>
+	
+	<!--<update id="updateByBatch" parameterType="java.util.List">-->
+        <!--update t_wx_user-->
+        <!--<trim prefix="set" suffixOverrides=",">-->
+            <!--<trim prefix="subscribe =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.subscribe}-->
+                <!--</foreach>-->
+            <!--</trim>-->
+            <!--<trim prefix="sex =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.sex}-->
+                <!--</foreach>-->
+            <!--</trim>-->
+             <!--<trim prefix="city =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.city}-->
+                <!--</foreach>-->
+            <!--</trim>     -->
+             <!--<trim prefix="province =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.province}-->
+                <!--</foreach>-->
+            <!--</trim>                   -->
+             <!--<trim prefix="country =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.country}-->
+                <!--</foreach>-->
+            <!--</trim> -->
+             <!--<trim prefix="language =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.language}-->
+                <!--</foreach>-->
+            <!--</trim>   -->
+            <!--<trim prefix="head_img_url =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.headImgUrl}-->
+                <!--</foreach>-->
+            <!--</trim>    -->
+            <!--<trim prefix="subscribe_time =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.subscribeTime}-->
+                <!--</foreach>-->
+            <!--</trim>             -->
+             <!--<trim prefix="remark =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.remark}-->
+                <!--</foreach>-->
+            <!--</trim>   -->
+            <!--<trim prefix="subscribe_scene =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.subscribeScene}-->
+                <!--</foreach>-->
+            <!--</trim>  -->
+            <!--<trim prefix="qr_scene =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.qrScene}-->
+                <!--</foreach>-->
+            <!--</trim>  -->
+            <!--<trim prefix="qr_scene_str =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.qrSceneStr}-->
+                <!--</foreach>-->
+            <!--</trim>    -->
+            <!--<trim prefix="create_time =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.createTime}-->
+                <!--</foreach>-->
+            <!--</trim>  -->
+             <!--<trim prefix="update_time =case" suffix="end,">-->
+                <!--<foreach collection="wxUserList" item="item" index="index">-->
+                     <!--when open_id=#{item.openId} then #{item.updateTime}-->
+                <!--</foreach>-->
+            <!--</trim>                                                                                        -->
+        <!--</trim>-->
+        <!--where open_id in-->
+        <!--<foreach collection="wxUserList" index="index" item="item" separator="," open="(" close=")">-->
+            <!--#{item.openId}-->
+        <!--</foreach>-->
+    <!--</update>-->
+	
+</mapper>

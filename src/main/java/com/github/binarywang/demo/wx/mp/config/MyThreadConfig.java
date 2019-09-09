@@ -1,21 +1,23 @@
 package com.github.binarywang.demo.wx.mp.config;
 
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -82,22 +84,15 @@ public class MyThreadConfig implements AsyncConfigurer {
     }
 
 
-
-    @Primary
-    @Bean( name = "myThread",autowire= Autowire.BY_NAME)
-//    @Component("myThread")
+    @Bean("myThread")
     public ThreadPoolExecutor myThread() {
 
         int corePoolSize = coreSize;
         int maximumPoolSize = maxSize;
         TimeUnit unit = TimeUnit.SECONDS;
 
-
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(queueCapacity);
-
-
         ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
-
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 maximumPoolSize,
                 keepAliveTime,
@@ -107,63 +102,29 @@ public class MyThreadConfig implements AsyncConfigurer {
         );
         return threadPoolExecutor;
 
-
     }
-
-//
-//    @Bean(name = "myThread2")
-//    public ThreadPoolExecutor myThread2() {
-//
-//        int corePoolSize = coreSize;
-//        int maximumPoolSize = maxSize;
-//        TimeUnit unit = TimeUnit.SECONDS;
-//
-//
-//        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(queueCapacity);
-//
-//        ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
-//
-//        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
-//                maximumPoolSize,
-//                keepAliveTime,
-//                unit,
-//                workQueue,
-//                new NameTreadFactory(), callerRunsPolicy
-//        );
-//        return threadPoolExecutor;
-//
-//
-//    }
-//
     class NameTreadFactory implements ThreadFactory {
-
-
         private final AtomicInteger threadNumber = new AtomicInteger(1);
-//        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
-
         @Override
         public Thread newThread(Runnable r) {
-
 //            Thread thread = this.defaultFactory.newThread(r);
-
             Thread thread = new Thread(r, "Java-" + this.threadNumber.getAndIncrement());
             return thread;
         }
     }
 
 
-    @Bean("")
-    public ScheduledExecutorService getExecutor(){
+    @Bean
+    public ScheduledExecutorService schedule(){
 
-//        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
-        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1,new BasicThreadFactory.Builder().namingPattern("scheduled-pool-%d").build());
 
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
 
         return scheduledExecutorService;
+
+
     }
-
-
 
 }
 

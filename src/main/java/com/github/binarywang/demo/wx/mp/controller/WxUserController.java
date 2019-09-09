@@ -2,7 +2,7 @@ package com.github.binarywang.demo.wx.mp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.github.binarywang.demo.wx.mp.config.MyThreadConfig;
-import com.github.binarywang.demo.wx.mp.config.ThreadExecutePoolConfig;
+import com.github.binarywang.demo.wx.mp.service.WxUserService;
 import com.github.binarywang.demo.wx.mp.utils.JsonUtils;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.AllArgsConstructor;
@@ -44,9 +44,6 @@ public class WxUserController {
     @Autowired
     WxMpUserService wxMpUserService;
 
-    @Autowired
-    ThreadExecutePoolConfig threadExecutePoolConfig;
-
 
     @Autowired
     MyThreadConfig myThreadConfig;
@@ -58,6 +55,9 @@ public class WxUserController {
     @Autowired()
     @Qualifier("myThread")
     ThreadPoolExecutor threadPoolExecutor;
+
+    @Autowired
+    WxUserService wxUserService;
 
 
     /**
@@ -111,14 +111,17 @@ public class WxUserController {
             e.printStackTrace();
         }
         List<String> openids = wxMpUserList.getOpenids();
-        int threadNum = 5;
+        int threadNum = 1000;
         int num = openids.size() % threadNum == 0 ? openids.size() / threadNum : openids.size() / threadNum + 1;
         System.out.println(num);
         System.out.println(openids.size());
         System.out.println(openids.size() / threadNum );
         List<String> subOpenids = null;
         Callable<List<WxMpUser>> task = null;
+
         List<Callable<List<WxMpUser>>> tasks = new ArrayList<Callable<List<WxMpUser>>>();
+
+
         for (int i = 0; i < num; i++) {
             if (i == num - 1) {
                 subOpenids = openids.subList(i * threadNum, openids.size());
@@ -143,18 +146,24 @@ public class WxUserController {
 
 
         ExecutorService executorService = Executors.newFixedThreadPool(20);
-        List result = new ArrayList();
+        List<WxMpUser> result = new ArrayList();
 //        List<Future<List<WxMpUser>>> futures = executorService.invokeAll(tasks);
         List<Future<List<WxMpUser>>> futures = threadPoolExecutor.invokeAll(tasks);
 
 
+
+
         for (Future<List<WxMpUser>> future : futures) {
-            result.add(future.get());
+            List<WxMpUser> wxMpUsers = future.get();
+            result.addAll(future.get());
         }
         System.out.println("总执行时间为： " + (System.currentTimeMillis() - l));
 //        return JSON.toJSONString(result);
 
         System.out.println(JSON.toJSONString(result));
+        wxUserService.batchSaveDatas(result);
+
+
         return JSON.toJSONString(wxMpUserList);
     }
 
@@ -210,18 +219,6 @@ public class WxUserController {
         }
     }
 
-    @PostMapping("/test")
-    @ResponseBody
-    public String updateRemark1() {
-
-        threadExecutePoolConfig.threadPoolTaskExecutOrTask().execute(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("測試核心"+Thread.currentThread().getName());
-            }
-        });
 
 
-        return "hello";
-    }
 }
