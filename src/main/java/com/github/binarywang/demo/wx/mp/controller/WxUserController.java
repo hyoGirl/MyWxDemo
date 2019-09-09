@@ -2,6 +2,7 @@ package com.github.binarywang.demo.wx.mp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.github.binarywang.demo.wx.mp.config.MyThreadConfig;
+import com.github.binarywang.demo.wx.mp.config.ThreadExecutePoolConfig;
 import com.github.binarywang.demo.wx.mp.utils.JsonUtils;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,9 @@ public class WxUserController {
 
     @Autowired
     WxMpUserService wxMpUserService;
+
+    @Autowired
+    ThreadExecutePoolConfig threadExecutePoolConfig;
 
 
     @Autowired
@@ -204,5 +208,20 @@ public class WxUserController {
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostMapping("/test")
+    @ResponseBody
+    public String updateRemark1() {
+
+        threadExecutePoolConfig.threadPoolTaskExecutOrTask().execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("測試核心"+Thread.currentThread().getName());
+            }
+        });
+
+
+        return "hello";
     }
 }
