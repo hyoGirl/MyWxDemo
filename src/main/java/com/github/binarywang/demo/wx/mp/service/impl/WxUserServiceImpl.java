@@ -3,6 +3,7 @@ package com.github.binarywang.demo.wx.mp.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.binarywang.demo.wx.mp.dao.WxUserDao;
 import com.github.binarywang.demo.wx.mp.entity.WxUser;
+import com.github.binarywang.demo.wx.mp.presto.PrestoConnHelper;
 import com.github.binarywang.demo.wx.mp.service.WxUserService;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ public class WxUserServiceImpl extends ServiceImpl<WxUserDao, WxUser> implements
     @Autowired
     WxUserDao wxUserDao;
 
+
+    @Autowired
+    private PrestoConnHelper prestoConnHelper;
+
     @Override
     public void batchSaveDatas(List<WxMpUser> result) {
 
@@ -28,4 +33,5 @@ public class WxUserServiceImpl extends ServiceImpl<WxUserDao, WxUser> implements
         wxUserDao.saveDatas(result);
 
     }
+
 }

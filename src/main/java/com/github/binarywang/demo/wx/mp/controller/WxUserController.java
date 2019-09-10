@@ -3,8 +3,6 @@ package com.github.binarywang.demo.wx.mp.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.binarywang.demo.wx.mp.config.MyThreadConfig;
 import com.github.binarywang.demo.wx.mp.service.WxUserService;
-import com.github.binarywang.demo.wx.mp.utils.JsonUtils;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.AllArgsConstructor;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpUserService;
@@ -12,8 +10,6 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -58,6 +53,22 @@ public class WxUserController {
 
     @Autowired
     WxUserService wxUserService;
+
+
+    @GetMapping("/getUserList3")
+    @ResponseBody
+    public String getUserList3(@RequestParam(name = "next_openid", required = false) String next_openid) {
+        long l = System.currentTimeMillis();
+        WxMpUserList wxMpUserList = null;
+        try {
+            wxMpUserList = this.wxMpUserService.userList(next_openid);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+        List<String> openids = wxMpUserList.getOpenids();
+        System.out.println("总人数为： " +openids.size() );
+        return JSON.toJSONString(wxMpUserList);
+    }
 
 
     /**
@@ -111,7 +122,7 @@ public class WxUserController {
             e.printStackTrace();
         }
         List<String> openids = wxMpUserList.getOpenids();
-        int threadNum = 1000;
+        int threadNum = 50;
         int num = openids.size() % threadNum == 0 ? openids.size() / threadNum : openids.size() / threadNum + 1;
         System.out.println(num);
         System.out.println(openids.size());
@@ -218,7 +229,6 @@ public class WxUserController {
             e.printStackTrace();
         }
     }
-
 
 
 }

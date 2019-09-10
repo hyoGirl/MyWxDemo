@@ -14,4 +14,5 @@ import java.util.List;
 public interface WxUserService extends IService<WxUser> {
 
     void batchSaveDatas(List<WxMpUser> result);
+
 }
